@@ -1,7 +1,12 @@
--- procedures.sql
--- Stored procedure and function for the Oracle Autonomous Database demo
+-- ============================================================================
+-- File: procedures.sql
+-- Author: Senbanjo Hector Ademola
+-- Created: 2025-08-01
+-- Purpose: PL/SQL logic for salary adjustment and name retrieval
+-- Example usage: Call give_raise to adjust salary; call employee_full_name to get full name
+-- Notes: Uses COMMIT inside procedure; ensure employees exist before calling
+-- ============================================================================
 
--- Procedure to give a raise to an employee by percentage
 CREATE OR REPLACE PROCEDURE give_raise(p_emp_id IN NUMBER, p_percentage IN NUMBER) AS
 BEGIN
     UPDATE employees
@@ -11,7 +16,6 @@ BEGIN
 END give_raise;
 /
 
--- Function to return full name of an employee
 CREATE OR REPLACE FUNCTION employee_full_name(p_emp_id IN NUMBER) RETURN VARCHAR2 AS
     v_name VARCHAR2(101);
 BEGIN

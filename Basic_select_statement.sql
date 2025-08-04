@@ -1,4 +1,4 @@
--- employees_basic_select.md
+-- employees_basic_select.sql
 -- Purpose: Retrieve basic employee details from the HR schema.
 -- Basic SELECT statements.
 -- Tables used: employees

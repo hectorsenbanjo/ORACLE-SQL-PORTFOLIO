@@ -14,3 +14,8 @@ JOIN employees e2
     ON e1.job_id = e2.job_id
     AND e1.employee_id < e2.employee_id  -- avoid self-pairing and duplicates
 ORDER BY e1.job_id, e1.employee_id, e2.employee_id;
+
+# Employees with the Same Job (Self Join)
+
+**Purpose:**  
+Demonstrate using a self-join on the `employees` table in the HR schema to find pairs of employees who have the same job (`job_id`).

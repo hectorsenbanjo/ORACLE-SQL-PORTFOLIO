@@ -25,3 +25,15 @@ SELECT
         0) AS department_bonus
 FROM 
     employees;
+
+How It Works:
+The DECODE function checks the department_id.
+
+If it matches 10, 20, 30, or 40, a bonus is calculated accordingly.
+
+If it doesn’t match any of the above, the bonus is 0.
+
+
+
+
+

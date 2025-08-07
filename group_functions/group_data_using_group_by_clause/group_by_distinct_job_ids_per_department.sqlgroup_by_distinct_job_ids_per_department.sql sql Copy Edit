@@ -1,0 +1,12 @@
+-- Title: Demonstrating GROUP BY Clause: Count of Distinct Job IDs per Department
+-- Description: This query counts the number of unique job IDs in each department.
+
+SELECT 
+    department_id,
+    COUNT(DISTINCT job_id) AS num_of_job_ids
+FROM 
+    employees
+GROUP BY 
+    department_id
+ORDER BY 
+    department_id;

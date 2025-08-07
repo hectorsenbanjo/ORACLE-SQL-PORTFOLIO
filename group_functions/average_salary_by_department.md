@@ -1,18 +1,19 @@
 # 📊 Average Salary by Department
 
-In this example, we analyze the salary distribution across different departments in the HR database.
+This query showcases the use of the `AVG()` group function in Oracle SQL. Using the sample HR schema, it calculates the **average salary of employees** grouped by their respective `department_id`.
 
-## 🧠 What We’re Doing
+## 🧠 Explanation
+- The `AVG(salary)` function computes the average salary for each group.
+- `GROUP BY department_id` ensures aggregation per department.
+- `ROUND(..., 2)` is used to limit the result to 2 decimal places.
+- The result is sorted in descending order so departments with the highest average salaries appear first.
 
-We're using the `AVG` group function to calculate the **average salary** of employees **within each department**. This helps managers understand which departments tend to have higher or lower compensation.
+## 🔍 Query Output (Example)
+| DEPARTMENT_ID | AVG_SALARY |
+|---------------|------------|
+| 90            | 19333.33   |
+| 100           | 8600.00    |
+| 110           | 8300.00    |
+| ...           | ...        |
 
-## 🔍 SQL Breakdown
-
-- `AVG(salary)`: Calculates the average salary in each department.
-- `ROUND(..., 2)`: Rounds the result to 2 decimal places.
-- `GROUP BY department_id`: Aggregates data by department.
-- `ORDER BY department_id`: Displays results in ascending order of department ID.
-
-## 💼 Real-World Use Case
-
-A Human Resources Analyst wants to understand the average compensation by department to determine where salary adjustments might be needed.
+> 💡 You can replace `AVG` with `MAX`, `MIN`, `COUNT`, or `SUM` to explore other group functions.

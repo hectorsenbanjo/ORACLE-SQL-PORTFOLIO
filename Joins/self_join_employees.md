@@ -63,5 +63,3 @@ Self joins allow us to relate rows in a table to other rows in the same table.
 They are useful for hierarchical data, like employee-manager relationships.
 
 Aliases are essential to distinguish the two roles (worker vs manager) in the query.
-    worker.manager_id = manager.employee_id;
-

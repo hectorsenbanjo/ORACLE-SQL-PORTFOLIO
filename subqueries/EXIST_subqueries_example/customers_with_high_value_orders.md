@@ -19,3 +19,6 @@ WHERE EXISTS (
       AND o.order_total > 100000
 )
 ORDER BY cust_first_name, cust_last_name;
+
+**Data Preview:**
+![Customers Table Sample](subqueries/EXIST_subqueries_example/image_customers_table.web)

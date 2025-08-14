@@ -23,4 +23,4 @@ Location: `oracle-dba-projects/oracle-cloud-autonomous-db/`
 ## Contact
 📍 Lagos, Nigeria  
 ✉️ hsenbanjo@yahoo.com  
-📞 +2348106347608
+📞 +2348106347608(Available on WhatsApp)

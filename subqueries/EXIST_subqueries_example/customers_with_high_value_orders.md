@@ -21,4 +21,5 @@ WHERE EXISTS (
 ORDER BY cust_first_name, cust_last_name;
 
 **Data Preview:**
-![Customers Table Sample](subqueries/EXIST_subqueries_example/image_customers_table.web)
+
+![Customers Table Sample](http://github.com/hectorsenbanjo/ORACLE-DBA-PORTFOLIO/subqueries/EXIST_subqueries_example/image_customers_table.web)

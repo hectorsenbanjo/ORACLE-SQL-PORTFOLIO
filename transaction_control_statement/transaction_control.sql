@@ -1,12 +1,12 @@
 -- ================================================
 -- transaction_control_demo.sql
--- One-page TCL demo: COMMIT, ROLLBACK, SAVEPOINT
+-- One-page TCL demo: COMMIT, ROLLBACK, SAVEPOINT, SELECT FOR UPDATE
 -- Works in SQL*Plus, SQLcl, and SQL Developer (run as script).
 -- ================================================
 
 -- Use a base ID unlikely to collide. Change if needed.
 SET DEFINE ON
-DEFINE BASE_ID = 9200
+DEFINE BASE_ID = 9400
 
 PROMPT
 PROMPT ========== STEP 1: INSERT (pending), VERIFY, then ROLLBACK ==========
@@ -73,14 +73,43 @@ ORDER BY region_id;
 COMMIT;
 
 PROMPT
+PROMPT ========== STEP 4: SELECT FOR UPDATE demo ==========
+-- Insert a new row for locking demo
+INSERT INTO regions (region_id, region_name)
+VALUES (&BASE_ID + 10, 'FOR_UPDATE_DEMO');
+COMMIT;
+
+-- Lock the row so other sessions cannot update/delete it
+SELECT region_id, region_name
+FROM regions
+WHERE region_id = &BASE_ID + 10
+FOR UPDATE;
+
+-- Update in the same session (succeeds immediately)
+UPDATE regions
+SET region_name = 'LOCKED_UPDATE'
+WHERE region_id = &BASE_ID + 10;
+
+-- Do not commit yet: row is locked.
+-- In another session, running the same UPDATE will hang until this COMMIT.
+
+-- Release the lock
+COMMIT;
+
+-- Verify final value
+SELECT region_id, region_name
+FROM regions
+WHERE region_id = &BASE_ID + 10;
+
+PROMPT
 PROMPT ========== FINAL CHECK: Show all demo rows ==========
 SELECT region_id, region_name
 FROM regions
-WHERE region_id BETWEEN &BASE_ID AND (&BASE_ID + 2)
+WHERE region_id BETWEEN &BASE_ID AND (&BASE_ID + 15)
 ORDER BY region_id;
 
 PROMPT
 PROMPT ========== OPTIONAL CLEANUP (uncomment to remove demo rows) ==========
 -- DELETE FROM regions
--- WHERE region_id BETWEEN &BASE_ID AND (&BASE_ID + 2);
+-- WHERE region_id BETWEEN &BASE_ID AND (&BASE_ID + 15);
 -- COMMIT;

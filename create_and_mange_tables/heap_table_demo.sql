@@ -1,12 +1,10 @@
 -- ================================================================
 -- heap_table_demo.sql
--- Demonstration of creating a heap table, inserting rows with
--- subqueries, and modifying the table in SQL Developer.
+-- Storytelling demo in SQL Developer:
+-- Create a heap table, insert rows using a subquery, then modify it.
 -- ================================================================
 
--- 1. CREATE TABLE (Heap Table)
--- A heap table is the default table type in Oracle unless you
--- specify IOT, CLUSTER, or EXTERNAL.
+-- Step 1: Create a heap table for recording sales
 CREATE TABLE sales_heap (
     sale_id     NUMBER(5) PRIMARY KEY,
     customer_id NUMBER(5),
@@ -15,26 +13,25 @@ CREATE TABLE sales_heap (
     sale_date   DATE DEFAULT SYSDATE
 );
 
--- 2. INSERT ROWS using a subquery
--- Suppose we want to copy some customers and products from OE schema
--- and simulate initial sales.
+-- Step 2: Populate the table with initial data using a subquery
+-- We pull customers and products from the OE schema as sample data.
 INSERT INTO sales_heap (sale_id, customer_id, product_id, quantity, sale_date)
 SELECT rownum, c.customer_id, p.product_id, 1, SYSDATE
 FROM customers c
 JOIN products p ON ROWNUM <= 5
 WHERE c.customer_id < 105;
 
--- Commit the transaction so data is saved.
 COMMIT;
 
--- 3. ALTER TABLE: Add a new column for discount
+-- Step 3: Business change requests come in...
+-- 3a. Sales team asks for a discount column
 ALTER TABLE sales_heap
 ADD discount NUMBER(5,2) DEFAULT 0;
 
--- 4. ALTER TABLE: Modify a column (increase quantity precision)
+-- 3b. Quantity column needs larger precision
 ALTER TABLE sales_heap
 MODIFY quantity NUMBER(5);
 
--- 5. ALTER TABLE: Drop a column (if not needed)
+-- 3c. Later, discount tracking is dropped
 ALTER TABLE sales_heap
 DROP COLUMN discount;

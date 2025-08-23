@@ -12,34 +12,28 @@ Each project is hands-on, tested against the **HR** and **OE** sample schemas, a
 ### 1. DDL & DML in Action  
 - Creating tables, defining constraints, and altering schemas.  
 - Using `INSERT`, `UPDATE`, and `DELETE` effectively with transactions.  
-- 📄 Files: `ddl_dml_demo.sql`, `transaction_control.md`  
 
 ### 2. Constraints and Data Integrity  
 - Enforcing **NOT NULL**, **UNIQUE**, **PRIMARY KEY**, and **FOREIGN KEY**.  
 - Naming vs auto-naming constraints.  
-- Testing invalid inserts to observe Oracle error behavior.  
-- 📄 Files: `oracle_constraints_in_sql.sql`, `oracle_constraints_in_sql.md`  
+- Testing invalid inserts to observe Oracle error behavior.    
 
 ### 3. Aggregate Functions & Grouping  
 - Hands-on use of `SUM`, `AVG`, `COUNT`, `MAX`, `MIN`.  
 - `GROUP BY`, `HAVING`, and filtering grouped results.  
-- 📄 Files: `group_functions_demo.sql`, `group_functions_storytelling.md`  
 
 ### 4. Subqueries & Joins  
 - Single-row and multi-row subqueries.  
 - Solving common errors like `ORA-01427: single-row subquery returns more than one row`.  
 - Inner joins, outer joins, self-joins.  
-- 📄 Files: `joins_and_subqueries.sql`, `subquery_storytelling.md`  
 
 ### 5. Set Operators & Advanced Queries  
 - Using `UNION`, `INTERSECT`, and `MINUS` with HR schema examples.  
 - Combining multiple queries to solve reporting problems.  
-- 📄 Files: `set_operators_demo.sql`, `set_operators_storytelling.md`  
 
 ### 6. Flashback & Versions Queries  
 - Demonstrating Oracle’s **Flashback Query** for historical data retrieval.  
 - Example: Tracking changes to an employee row using `VERSIONS BETWEEN`.  
-- 📄 Files: `flashback_demo.sql`, `flashback_storytelling.md`  
 
 ---
 

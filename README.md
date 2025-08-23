@@ -79,8 +79,7 @@ This portfolio covers hands-on examples from the official exam topics, including
 📧 Email: **hsenbanjo@yahoo.com**  
 📞 Phone: **+234 810 634 7608**  
 🌍 Location: **Lagos, Nigeria**  
-🔗 LinkedIn: [linkedin.com/in/senbanjo-hector](https://linkedin.com)  
-💻 GitHub: [github.com/your-username/oracle-sql-portfolio](https://github.com/your-username/oracle-sql-portfolio)  
+💻 GitHub: [github.com/hectorsenbanjo/oracle-sql-portfolio](https://github.com/hectorsenbanjo/oracle-sql-portfolio)  
 
 ---
 

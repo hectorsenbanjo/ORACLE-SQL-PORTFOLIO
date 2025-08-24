@@ -7,7 +7,7 @@
 DROP VIEW empvw20;
 DROP VIEW empvw30;
 DROP VIEW empvw40;
-DROP VIEW empvw41;
+DROP VIEW empvw100;
 DROP VIEW empvw60;
 
 -- Check if a view has constraints before dropping

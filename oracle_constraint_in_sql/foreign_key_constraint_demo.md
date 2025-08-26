@@ -1,42 +1,102 @@
-Foreign Key Constraint Demo
+# Exploring Foreign Keys: Single-Column and Composite Constraints
 
-This demo shows how foreign keys enforce referential integrity in Oracle SQL.
-We use two tables:
+This demo shows how **foreign keys** enforce referential integrity between parent and child tables.  
+We’ll create a parent table `employees_copy`, a child table `managers`, and test valid/invalid inserts.
 
-employees_copy → Parent table with employee_id (PK) and (first_name, last_name) (Unique).
+---
 
-managers → Child table with both single-column and composite foreign keys.
+## 1. SQL Script
 
-✅ Valid Insert
+```sql
+-- 1. Create parent table (employees_copy)
+CREATE TABLE employees_copy (
+    employee_id    NUMBER(6) CONSTRAINT emp_cpy_eid_pk PRIMARY KEY,
+    first_name     VARCHAR2(20),
+    last_name      VARCHAR2(20),
+    department_id  NUMBER(4),
+    CONSTRAINT emp_cpy_names_uk UNIQUE (first_name, last_name)
+);
+
+-- 2. Create child table (managers) with foreign keys
+CREATE TABLE managers (
+    manager_id     NUMBER CONSTRAINT mgr_mid_uq UNIQUE,
+    first_name     VARCHAR2(50),
+    last_name      VARCHAR2(50),
+    department_id  NUMBER NOT NULL,
+    phone_number   VARCHAR2(11) UNIQUE NOT NULL,
+    email          VARCHAR2(100),
+    UNIQUE (email),
+    -- Single-column FK
+    CONSTRAINT mgr_emp_fk FOREIGN KEY (manager_id)
+        REFERENCES employees_copy (employee_id),
+    -- Composite FK
+    CONSTRAINT mgr_names_fk FOREIGN KEY (first_name, last_name)
+        REFERENCES employees_copy (first_name, last_name)
+);
+
+-- 3. Insert into employees_copy (parent table)
+INSERT INTO employees_copy VALUES (101, 'Alice', 'Brown', 10);
+INSERT INTO employees_copy VALUES (102, 'Mark', 'Smith', 20);
+
+-- 4. Testing Foreign Keys
+-- ✅ Valid insert: matches employee_id and (first_name,last_name)
 INSERT INTO managers 
 VALUES (101, 'Alice', 'Brown', 10, '08011111111', 'alice.brown@company.com');
 
-
-manager_id = 101 exists in employees_copy.
-
-(first_name, last_name) = ('Alice', 'Brown') also exists.
-✔ Insert succeeds.
-
-❌ Invalid Insert: Unknown manager_id
+-- ❌ Invalid: manager_id not found in employees_copy
 INSERT INTO managers 
 VALUES (200, 'John', 'Doe', 30, '08022222222', 'john.doe@company.com');
 
-
-manager_id = 200 does not exist in employees_copy.
-❌ Violates mgr_emp_fk.
-
-❌ Invalid Insert: Unknown (first_name, last_name)
+-- ❌ Invalid: (first_name,last_name) not found in employees_copy
 INSERT INTO managers 
 VALUES (102, 'David', 'Lee', 40, '08033333333', 'david.lee@company.com');
 
+-- 5. Cleanup
+DROP TABLE managers;
+DROP TABLE employees_copy;
 
-(first_name, last_name) = ('David','Lee') not found in parent table.
-❌ Violates mgr_names_fk.
+2. Storytelling Walkthrough
+Creating the Parent Table
+
+Our parent table employees_copy holds employee records.
+It has:
+
+A primary key on employee_id
+
+A unique constraint on (first_name, last_name)
+
+Creating the Child Table
+
+The managers table references employees in two ways:
+
+Single-column foreign key → manager_id must exist in employees_copy.employee_id.
+
+Composite foreign key → (first_name, last_name) must exist in employees_copy.
+
+Inserting Parent Data
+
+We add two employees:
+
+(101, 'Alice', 'Brown')
+
+(102, 'Mark', 'Smith')
+
+Testing Foreign Keys
+
+✅ Valid insert: Alice Brown works (both keys match).
+
+❌ Invalid insert: John Doe fails (missing employee_id=200).
+
+❌ Invalid insert: David Lee fails (missing composite key pair).
+
+Cleanup
+
+Finally, we DROP both tables to reset the schema.
 
 🔑 Key Takeaways
 
-Single-column FK → ensures manager_id exists in employees_copy.
+A single-column foreign key ensures one field matches in the parent.
 
-Composite FK → ensures (first_name, last_name) pair matches the parent.
+A composite foreign key enforces dependency on multiple fields as a unit.
 
-Foreign keys prevent inserting invalid references, protecting data integrity.
+Oracle rejects invalid inserts, preserving referential integrity.

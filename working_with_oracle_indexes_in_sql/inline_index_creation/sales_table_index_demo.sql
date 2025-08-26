@@ -1,7 +1,7 @@
 -- Drop the table if it exists
 DROP TABLE sales PURGE;
 
--- Create the sales table with inline indexes
+-- Create the sales table with inline unique indexes
 CREATE TABLE sales (
     sale_id NUMBER 
         PRIMARY KEY 
@@ -13,16 +13,13 @@ CREATE TABLE sales (
     transaction_id NUMBER 
         UNIQUE 
         USING INDEX (
-            CREATE BITMAP INDEX sale_tran_id_idx ON sales(transaction_id)
+            CREATE UNIQUE INDEX sale_tran_id_idx ON sales(transaction_id)
         ),
     sale_detail_text VARCHAR2(4000)
 );
 
--- Sample query that should leverage indexes
+-- Test query
 SELECT * 
 FROM sales 
 WHERE sale_id = 201 
   AND transaction_id = 30123;
-
--- In SQL Developer: Highlight the query and press SHIFT + F4
--- to open the Explain Plan window and verify if indexes are used.

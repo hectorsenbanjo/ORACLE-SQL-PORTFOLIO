@@ -1,14 +1,18 @@
-# Table with Inline Indexes on `sales`
+# Using Inline Indexes in Oracle DDL
 
-In this demo, we create a `sales` table that demonstrates **two types of indexes**:
+This demo shows how Oracle uses **inline index definitions** when creating a table.  
+We’ll define a **primary key** and a **unique constraint** with explicitly named indexes, then check if the query optimizer uses them.
 
 ---
 
-## Step 1: Create the Table
-
-We define the `sales` table with both **unique B-tree** and **bitmap indexes** created inline:
+## Step 1: Drop the Table
 
 ```sql
+DROP TABLE sales PURGE;
+
+We start fresh by ensuring the sales table doesn’t exist.
+
+Step 2: Create the Table with Inline Indexes
 CREATE TABLE sales (
     sale_id NUMBER 
         PRIMARY KEY 
@@ -20,32 +24,75 @@ CREATE TABLE sales (
     transaction_id NUMBER 
         UNIQUE 
         USING INDEX (
-            CREATE BITMAP INDEX sale_tran_id_idx ON sales(transaction_id)
+            CREATE UNIQUE INDEX sale_tran_id_idx ON sales(transaction_id)
         ),
     sale_detail_text VARCHAR2(4000)
 );
 
-Step 2: Run a Query Using the Index
+sale_id → Primary Key, backed by a unique B-tree index (sales_sale_id_idx).
 
-Now we run a query to find all employees with a commission percentage of 0.4:
+transaction_id → Unique constraint, also backed by a unique B-tree index (sale_tran_id_idx).
 
+This ensures fast lookups on both columns.
+
+Step 3: Insert Data
+INSERT INTO sales VALUES (201, DATE '2023-01-01', 1001, 30123, 'Demo sale 1');
+INSERT INTO sales VALUES (202, DATE '2023-01-02', 1002, 30124, 'Demo sale 2');
+COMMIT;
+
+
+Now we have data to query.
+
+Step 4: Run a Query with Both Columns
 SELECT * 
-FROM employees_copy 
-WHERE commission_pct = 0.4;
+FROM sales
+WHERE sale_id = 201
+  AND transaction_id = 30123;
 
-🔎 What We Did
 
-Bitmap Index
+This query matches one row. Both filter columns (sale_id and transaction_id) are indexed.
 
-Stores row IDs as bitmaps (0s and 1s) for each distinct value.
+Step 5: Check the Execution Plan
 
-Very efficient when the column has low cardinality (few distinct values), such as commission_pct.
+In SQL Developer: highlight the query and press Shift+F4.
+Or use the classic approach:
 
-Why Not a B-tree?
+EXPLAIN PLAN FOR
+SELECT * 
+FROM sales
+WHERE sale_id = 201
+  AND transaction_id = 30123;
 
-A B-tree index is better for high-cardinality columns (like employee_id).
+SELECT * FROM TABLE(DBMS_XPLAN.DISPLAY);
 
-A bitmap index shines in queries like this, where we filter on a column with only a few distinct values.
+Expected Plan (simplified)
+-----------------------------------------------------------------------------------
+| Id  | Operation                   | Name                | Rows | Bytes | Cost |
+-----------------------------------------------------------------------------------
+|   0 | SELECT STATEMENT            |                     |    1 |   100 |    2 |
+|   1 |  TABLE ACCESS BY INDEX ROWID| SALES               |    1 |   100 |    2 |
+|*  2 |   INDEX UNIQUE SCAN         | SALES_SALE_ID_IDX   |    1 |       |    1 |
+-----------------------------------------------------------------------------------
 
-✅ Conclusion: This is a bitmap index that optimizes lookups on the commission_pct column.
+Predicate Information:
+  2 - access("SALE_ID"=201)
+      filter("TRANSACTION_ID"=30123)
 
+
+Oracle uses the primary key index on sale_id.
+
+It then applies the transaction_id filter.
+
+Alternatively, it could use the unique index on transaction_id first.
+
+Step 6: Key Insight
+
+Oracle does not need to scan both indexes simultaneously.
+It chooses the most selective index (often the PK) and filters the other column.
+
+If you wanted both columns to be used together efficiently, you could create a composite index:
+
+CREATE UNIQUE INDEX sale_composite_idx 
+    ON sales(sale_id, transaction_id);
+
+✅ This demo shows how inline index definitions work in Oracle DDL and how the optimizer uses them in practice.

@@ -1,24 +1,30 @@
-Dropping Constraints and Handling Dependencies
+# Dropping Constraints and Handling Dependencies in Oracle
 
-This demo shows how to remove constraints from a table and deal with dependencies like foreign keys.
-We work with a cloned employees_copy table and a new managers table.
+This demo shows how to **drop constraints (PKs, FKs)** in Oracle, and what happens when **dependencies** exist between tables.  
+We use the **HR schema** `employees` table as the source.
 
-1. Clone the Base Table
+---
 
-We start by copying data from employees:
+## Full Demo Script with Explanations
 
+```sql
+-- =============================================================
+-- drop_constraints_and_dependencies.sql
+-- Demo: Dropping constraints (PK, FKs) and handling dependencies
+-- Works in HR schema (employees, departments tables available).
+-- =============================================================
+
+-- 1. Clean up any previous copies
+DROP TABLE managers CASCADE CONSTRAINTS;
+DROP TABLE employees_copy CASCADE CONSTRAINTS;
+
+-- 2. Clone the employees table and add a PK
 CREATE TABLE employees_copy AS SELECT * FROM employees;
 
-
-We then add a primary key:
-
-ALTER TABLE employees_copy 
+ALTER TABLE employees_copy
     ADD CONSTRAINT emp_cpy_emp_id_pk PRIMARY KEY (employee_id);
 
-2. Create a Dependent Table
-
-The managers table includes a foreign key to employees_copy:
-
+-- 3. Create a dependent child table (managers)
 CREATE TABLE managers (
   manager_id    NUMBER CONSTRAINT mgr_mid_pk PRIMARY KEY,
   first_name    VARCHAR2(50),
@@ -26,37 +32,30 @@ CREATE TABLE managers (
   department_id NUMBER NOT NULL,
   phone_number  VARCHAR2(11) UNIQUE NOT NULL,
   email         VARCHAR2(100) UNIQUE,
-  CONSTRAINT mgr_emp_fk FOREIGN KEY (manager_id) REFERENCES employees_copy (employee_id)
+  CONSTRAINT mgr_emp_fk FOREIGN KEY (manager_id)
+    REFERENCES employees_copy (employee_id)
 );
 
-
-Here, mgr_emp_fk depends on the primary key of employees_copy.
-
-3. Drop Constraints
-Drop by Explicit Name
+-- 4a. Drop PK using explicit constraint name
 ALTER TABLE employees_copy DROP CONSTRAINT emp_cpy_emp_id_pk;
 
+-- 4b. Re-add the PK for further tests
+ALTER TABLE employees_copy
+    ADD CONSTRAINT emp_cpy_emp_id_pk PRIMARY KEY (employee_id);
 
-This works because we named the PK.
-
-Drop with CASCADE
+-- 4c. Drop PK + dependent FK with CASCADE
 ALTER TABLE employees_copy DROP PRIMARY KEY CASCADE;
 
+-- 5. Final cleanup
+DROP TABLE managers CASCADE CONSTRAINTS;
+DROP TABLE employees_copy CASCADE CONSTRAINTS;
 
-Drops the primary key.
+🔑 Key Takeaways
 
-Also removes dependent foreign keys (e.g., mgr_emp_fk in managers).
+Dropping by name lets you target a specific constraint safely.
 
-This is safer when other tables depend on the PK.
+Dropping PRIMARY KEY CASCADE removes the PK and all dependent FKs in child tables.
 
-✅ Story Recap
+CASCADE CONSTRAINTS is useful for cleanup when dropping tables with dependencies.
 
-In this demo, we learned that:
-
-Always name constraints for easier management.
-
-Use CASCADE when foreign keys depend on the constraint.
-
-Dropping a PK without CASCADE fails if child tables reference it.
-
-This mirrors real-world DBA work where careful constraint management keeps the schema consistent.
+Always be cautious: removing constraints can compromise referential integrity.

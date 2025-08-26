@@ -21,4 +21,14 @@ INSERT INTO employees_copy (employee_id, first_name, last_name, email, hire_date
 VALUES (employee_seq.NEXTVAL, 'John', 'Watson', 'JWATSON', SYSDATE, 'IT_PROG', 5000);
 
 INSERT INTO employees_copy (employee_id, first_name, last_name, email, hire_date, job_id, salary)
-VALUES (employee_seq.NEXTVAL, 'Mary', 'Jones', 'MJONES', SYSDATE, 'SA_REP', 600
+VALUES (employee_seq.NEXTVAL, 'Mary', 'Jones', 'MJONES', SYSDATE, 'SA_REP', 6000);
+
+INSERT INTO employees_copy (employee_id, first_name, last_name, email, hire_date, job_id, salary)
+VALUES (employee_seq.NEXTVAL, 'Peter', 'Brown', 'PBROWN', SYSDATE, 'HR_REP', 4000);
+
+-- Step 4: Check the inserted rows
+SELECT employee_id, first_name, last_name, job_id, salary FROM employees_copy;
+
+-- Step 5: Inspect sequence values
+SELECT employee_seq.CURRVAL FROM dual;
+SELECT employee_seq.NEXTVAL FROM dual;

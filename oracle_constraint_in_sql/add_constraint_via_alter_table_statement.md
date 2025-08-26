@@ -1,61 +1,64 @@
-Adding Constraints to a Copied Table with ALTER TABLE
+# Adding Constraints to a Table Copy in Oracle
 
-This demo shows how to clone a table and then enforce data rules by adding constraints step by step.
-We work with the HR schema, cloning the employees table into employees_copy and then applying constraints.
+This demo shows how to **add different types of constraints** (PK, UK, FK, CHECK, NOT NULL) to a cloned table.  
+We use the **HR schema** `employees` table as the base and create `employees_copy` with enhanced integrity rules.
 
-1. Clone the Table
+---
 
-We begin by creating a working copy of employees.
-This creates the structure and data, but no constraints are copied over:
+## Full Demo Script with Explanations
 
+```sql
+-- Clean up any previous copies
+DROP TABLE employees_copy CASCADE CONSTRAINTS;
+
+-- Step 1: Clone the employees table
 CREATE TABLE employees_copy AS SELECT * FROM employees;
 
-2. Add a Primary Key
+-- Step 2: Add constraints
 
-We enforce uniqueness on employee_id:
-
+-- Primary Key on employee_id
 ALTER TABLE employees_copy 
     ADD CONSTRAINT emp_cpy_emp_id_pk PRIMARY KEY (employee_id);
 
-3. Add Unique Constraints
+-- Unique constraints
+ALTER TABLE employees_copy 
+    ADD CONSTRAINT emp_cpy_email_uk UNIQUE (email);
 
-We prevent duplicate values in critical columns:
+ALTER TABLE employees_copy 
+    ADD CONSTRAINT emp_cpy_names_uk UNIQUE (first_name, last_name);
 
-ALTER TABLE employees_copy ADD CONSTRAINT emp_cpy_email_uk UNIQUE (email);
-ALTER TABLE employees_copy ADD CONSTRAINT emp_cpy_names_uk UNIQUE (first_name, last_name);
-ALTER TABLE employees_copy ADD CONSTRAINT emp_cpy_phone_uk UNIQUE (phone_number);
+ALTER TABLE employees_copy 
+    ADD CONSTRAINT emp_cpy_phone_uk UNIQUE (phone_number);
 
-4. Add a Check Constraint
-
-We ensure only employees with a meaningful salary are allowed:
-
+-- Check constraint
 ALTER TABLE employees_copy 
     ADD CONSTRAINT emp_cpy_salary_ck CHECK (salary > 10000);
 
-5. Add a Foreign Key
-
-We maintain referential integrity by linking each employee to a valid department:
-
+-- Foreign Key to departments table
 ALTER TABLE employees_copy 
     ADD CONSTRAINT emp_cpy_dept_fk FOREIGN KEY (department_id) 
     REFERENCES departments(department_id);
 
-6. Enforce NOT NULL
+-- NOT NULL constraints
+ALTER TABLE employees_copy 
+    MODIFY salary CONSTRAINT emp_cpy_salary_nn NOT NULL;
 
-Finally, we make sure key fields are never left empty:
+ALTER TABLE employees_copy 
+    MODIFY last_name NOT NULL;
 
-ALTER TABLE employees_copy MODIFY salary CONSTRAINT emp_cpy_salary_nn NOT NULL;
-ALTER TABLE employees_copy MODIFY last_name NOT NULL;
-ALTER TABLE employees_copy MODIFY first_name NOT NULL;
+ALTER TABLE employees_copy 
+    MODIFY first_name NOT NULL;
 
-✅ Story Recap
+🔑 Key Takeaways
 
-By starting with a simple copy and layering constraints one by one, we:
+Primary Key ensures each row in employees_copy is uniquely identified by employee_id.
 
-Guaranteed unique identifiers (PK & unique constraints).
+Unique constraints enforce business rules: no duplicate emails, names, or phone numbers.
 
-Prevented invalid data (check & NOT NULL).
+Check constraint guarantees salaries must be greater than 10,000.
 
-Ensured referential integrity (foreign key).
+Foreign Key links employees to valid departments, preserving referential integrity.
 
-This approach mirrors real-world database design, where constraints protect data quality and business rules.
+NOT NULL constraints enforce mandatory data entry for important fields like names and salary.
+
+This example highlights how Oracle lets you layer multiple constraints to enforce both data quality and business rules.
